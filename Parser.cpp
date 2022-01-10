@@ -137,6 +137,16 @@ void Parser::CKY(){
     //P[よこ、たかさ、生成規則]
     vector<vector<vector<string>>> P(n+1,vector<vector<string>>(n+1,vector<string>(grammerDictionaryList.size())));
 
+    //作業しているブロックをカウント
+    int countNum = 1;
+    //ex) S8 -> NP1 VP2
+    //[ブロックの番号,P[][][1],ブロック番号,P[][][1]]
+    //generation[8] = [1,1,2,1]
+    //ex) VP15 -> VERB2 NP10
+    //[ブロックの番号,P[][][0],ブロック番号,P[][][0]]
+    //generation[15] = [2,0,10,0]
+    vector<vector<int>> generation;
+
     //入力文に対応する終端記号
     for(int i=1;i<=n;i++){
         //品詞を代入
@@ -153,6 +163,9 @@ void Parser::CKY(){
     for(int d=1;d<n;d++){//高さ
         for(int i=1;i<=n-d;i++){//横幅
             int j = i + d;
+
+
+
             for(int k=i;k<j;k++){//深さ
                 for(vector<string> arry:grammerDictionaryList){//生成規則
                     //A -> BCのみ
@@ -176,16 +189,35 @@ void Parser::CKY(){
         }
     }
 
+    int addNum = n;
+    //三角行列を表示
     for(int i=1;i<=n;i++){
         for(int j=1;j<=n;j++){
-            if(P[i][j][0].compare("") == 0){
-                cout <<setw(9) << "";
-            }else{
-                cout << setw(9) <<P[i][j][0] + "   ";
+            if(i == j){
+                countNum = i;
+                addNum = n;   
             }
+            if(P[i][j][1].compare("") == 0){
+                if(P[i][j][0].compare("") == 0){
+                    cout <<setw(13) << "";
+                }else{
+                    cout << setw(13) <<P[i][j][0] + to_string(countNum) + "   ";
+                }
+            }else{
+                if(P[i][j][0].compare("") == 0){
+                    cout <<setw(13) << "";
+                }else{
+                    cout << setw(13) <<P[i][j][0] + to_string(countNum) + "(" + P[i][j][1] + to_string(countNum) + ")" + "   ";
+                }                
+            }
+
+            countNum += addNum;
+            addNum--;
         }
         cout << "" << endl;
     }
+
+    //受理か非受理か
     if(P[1][n][0].compare("SENTENCE") == 0)
         cout << "acceptance" << endl;
     else
