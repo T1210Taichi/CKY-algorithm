@@ -141,17 +141,20 @@ void Parser::CKY(){
     int countNum = 1;
     //ex) S8 -> NP1 VP2
     //[ブロックの番号,P[][][1],ブロック番号,P[][][1]]
-    //generation[8] = [1,1,2,1]
+    //generationList[8] = [1,1,2,1]
     //ex) VP15 -> VERB2 NP10
     //[ブロックの番号,P[][][0],ブロック番号,P[][][0]]
-    //generation[15] = [2,0,10,0]
-    vector<vector<int>> generation;
+    //generationList[15] = [2,0,10,0]
+    vector<vector<int>> generationList;
 
     //入力文に対応する終端記号
     for(int i=1;i<=n;i++){
         //品詞を代入
-        //P[i][i].push_back(wordClassList[i]);
         P[i][i][0] = wordClassList[i-1];
+
+        //作業ブロックをカウント
+        generationList.push_back({0,0,0,0});
+        countNum++;
 
         for(vector<string> arry:grammerDictionaryList){
             if(P[i][i][0].compare(arry[1]) == 0 && arry.size() == 2){
@@ -160,12 +163,22 @@ void Parser::CKY(){
         }
     }
 
+    //A->BCのBとCのブロックの数字
+    int B=0,C=0;
+    int tempN = n;
+    int Num=0;
+
     for(int d=1;d<n;d++){//高さ
         for(int i=1;i<=n-d;i++){//横幅
             int j = i + d;
 
-
-
+            //変数の初期化
+            Num = n - d;
+            tempN = n;
+            //左
+            B = i;
+            //一つ下
+            C = countNum - Num;
             for(int k=i;k<j;k++){//深さ
                 for(vector<string> arry:grammerDictionaryList){//生成規則
                     //A -> BCのみ
@@ -173,19 +186,43 @@ void Parser::CKY(){
                         //NOUN|NP  VERB|VPをふりわけ
                         if((P[i][k][0].compare(arry[1]) == 0) && (P[k+1][j][0].compare(arry[2]) == 0)){
                             P[i][j][0] = arry[0];
+                            generationList.push_back({B,0,C,0});
+
+                            //cout << arry[0] + to_string(countNum) << endl;//debug
                         }else if(!P[i][k][1].empty() && P[k+1][j][1].empty()){
-                            if((P[i][k][1].compare(arry[1]) == 0) && (P[k+1][j][0].compare(arry[2]) == 0))
+                            if((P[i][k][1].compare(arry[1]) == 0) && (P[k+1][j][0].compare(arry[2]) == 0)){
                                 P[i][j][0] = arry[0];
+                                generationList.push_back({B,1,C,0});
+
+                                //cout << arry[0] + to_string(countNum) << endl;//debug
+                            }
                         }else if(P[i][k][1].empty() && !P[k+1][j].empty()){
-                            if((P[i][k][0].compare(arry[1]) == 0) && (P[k+1][j][1].compare(arry[2]) == 0))
+                            if((P[i][k][0].compare(arry[1]) == 0) && (P[k+1][j][1].compare(arry[2]) == 0)){
                                 P[i][j][0] = arry[0];
+                                generationList.push_back({B,0,C,1});
+
+                                //cout << arry[0] + to_string(countNum) << endl;//debug
+                            }
                         }else if(!P[i][k][1].empty() && !P[k+1][j].empty()){
-                            if((P[i][k][1].compare(arry[1]) == 0) && (P[k+1][j][1].compare(arry[2]) == 0))
+                            if((P[i][k][1].compare(arry[1]) == 0) && (P[k+1][j][1].compare(arry[2]) == 0)){
                                 P[i][j][0] = arry[0];
+                                generationList.push_back({B,1,C,1});
+
+                                //cout << arry[0] + to_string(countNum) << endl;//debug
+                            }
                         }
                     }
+
                 }
+                //ブロックの移動
+                B += tempN--;
+                Num++;
             }
+            if(generationList.size() < countNum){
+                generationList.push_back({-1,-1,-1,-1});
+            }
+            //ブロックを移動
+            countNum++;
         }
     }
 
@@ -222,6 +259,20 @@ void Parser::CKY(){
         cout << "acceptance" << endl;
     else
         cout << "not acceptance" << endl;
+
+    cout << setw(3) << "Num";
+    cout << setw(5) << "left";
+    cout << setw(5) << "no.";
+    cout << setw(5) << "bottom";
+    cout << setw(5) << "no." << endl;;
+
+    for(int i=0;i<generationList.size();i++){
+        cout << setw(3) << i+1;
+        for(int a:generationList[i]){
+            cout << setw(5) << a;
+        }
+        cout << "" << endl;
+    }
 
     setCKYList(P);
     
