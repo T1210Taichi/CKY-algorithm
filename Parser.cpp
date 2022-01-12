@@ -5,8 +5,10 @@
 using namespace std;
 
 //コンストラクタ
-Parser::Parser(string fileName){
-    setWordList(toWords(fileName));
+Parser::Parser(string sentenceFileName,string wordDictionaryFileName,string grammerDictionaryFileName){
+    setWordList(toWords(sentenceFileName));
+    this-> wordDictionaryFileName = wordDictionaryFileName;
+    this-> grammerDictionaryFileName = grammerDictionaryFileName;
 }
 
 //受理可能か不可能か調べる
@@ -26,7 +28,7 @@ void Parser::parser(){
     CKY();
 
     //結果を表示する
-    //printWords(getWordList(),getWordClassList());
+    printWords();
 }
 
 //ファイルから文章を単語ごとにリストに保存して返す
@@ -77,48 +79,73 @@ bool Parser::readGrammerDictionary(){
 }
 
 //結果を表示する
-void Parser::printWords(vector<string> words, vector<string> wordClasses){
-    if(words.size() == 0){
-        cout << "文章がありません" << endl;
-        return;
-    }
+void Parser::printWords(){
+    int n = getWordList().size();
 
-    //11文字区切りにする
-    int n = 11;
+    vector<vector<int>> generationIntList = getGenerationIntList();
+    vector<vector<string>> generationStringList = getGenerationStringList();
+    vector<vector<vector<string>>> P = getCKYList();
+    //作業しているブロックをカウント
+    int countNum = 1;
 
-    //単語を表示
-    for(int i=0;i<n;i++){
-        cout << " ";
-    }
-    for(int i=0;i<words.size();i++){
-        cout << words[i];
+    int addNum = n;
+    //三角行列を表示
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            if(i == j){
+                countNum = i;
+                addNum = n;   
+            }
+            if(P[i][j][1].compare("") == 0){
+                if(P[i][j][0].compare("") == 0){
+                    cout <<setw(13) << "";
+                }else{
+                    cout << setw(13) <<P[i][j][0] + to_string(countNum) + "   ";
+                }
+            }else{
+                if(P[i][j][0].compare("") == 0){
+                    cout <<setw(13) << "";
+                }else{
+                    cout << setw(13) <<P[i][j][0] + to_string(countNum) + "(" + P[i][j][1] + to_string(countNum) + ")" + "   ";
+                }                
+            }
 
-        int x = n - (words[i].size());
-        for(int j=0;j<x;j++){
-            cout << " ";
+            countNum += addNum;
+            addNum--;
         }
+        cout << "" << endl;
     }
-    cout << "" << endl;
-    //縦棒を表示
-    for(int i=0;i<wordClasses.size();i++){
-        cout << "|" ;
-        for(int j=0;j<n-1;j++){
-            cout << " ";
-        }
-    }
-    cout << "" << endl;
-    //品詞を表示
-    for(int i=0;i<wordClasses.size();i++){
-        string s = wordClasses[i];
-        cout << s << "";
 
-        int x = n - (wordClasses[i].size());
-        for(int j = 0;j < x ; j++){
-            cout << " ";
+    //受理か非受理か
+    if(P[1][n][0].compare("SENTENCE") == 0)
+        cout << "acceptance" << endl;
+    else
+        cout << "not acceptance" << endl;
+
+    //リストを表示
+
+    cout << setw(3) << "Num";
+    cout << setw(5) << "left";
+    cout << setw(5) << "no.";
+    cout << setw(5) << "bottom";
+    cout << setw(5) << "no.";
+    cout << setw(12) << "result";
+    cout << setw(12) << "left";
+    cout << setw(12) << "bottom" << endl;
+    for(int i=0;i<generationIntList.size();i++){
+        cout << setw(3) << i+1;
+        for(int a:generationIntList[i]){
+            cout << setw(5) << a;
         }
+        for(string a:generationStringList[i]){
+            cout << setw(12) << a;
+        }
+        cout << "" << endl;
     }
-    cout <<""<<endl;
-    cout << "受理可能" << endl;
+
+    //S文を表示
+    string S = makeSSentence(generationIntList,generationStringList,generationIntList.size());
+    cout << S << endl;
 }
 
 
@@ -146,7 +173,7 @@ void Parser::CKY(){
     //[ブロックの番号,P[][][0],ブロック番号,P[][][0]]
     //generationIntList[15] = [2,0,10,0]
     vector<vector<int>> generationIntList;
-    //geterationStringList[8] = ["SENTENCE8","NP1","VP2"];
+    //generationStringList[8] = ["SENTENCE8","NP1","VP2"];
     vector<vector<string>> generationStringList;
 
     //入力文に対応する終端記号
@@ -229,77 +256,44 @@ void Parser::CKY(){
                     }
 
                 }
-                //ブロックの移動
+                //探索ブロックの深さを移動
                 B += tempN--;
-                Num++;
+                C -= ++Num;
             }
             //このブロックで生成されなければ
             if(generationIntList.size() < countNum){
                 generationIntList.push_back({-1,-1,-1,-1});
                 generationStringList.push_back({"-----","-----","-----"});
             }
-            //ブロックを移動
+            //ブロックを横に移動
             countNum++;
         }
     }
 
-    int addNum = n;
-    //三角行列を表示
-    for(int i=1;i<=n;i++){
-        for(int j=1;j<=n;j++){
-            if(i == j){
-                countNum = i;
-                addNum = n;   
-            }
-            if(P[i][j][1].compare("") == 0){
-                if(P[i][j][0].compare("") == 0){
-                    cout <<setw(13) << "";
-                }else{
-                    cout << setw(13) <<P[i][j][0] + to_string(countNum) + "   ";
-                }
-            }else{
-                if(P[i][j][0].compare("") == 0){
-                    cout <<setw(13) << "";
-                }else{
-                    cout << setw(13) <<P[i][j][0] + to_string(countNum) + "(" + P[i][j][1] + to_string(countNum) + ")" + "   ";
-                }                
-            }
-
-            countNum += addNum;
-            addNum--;
-        }
-        cout << "" << endl;
-    }
-
-    //受理か非受理か
-    if(P[1][n][0].compare("SENTENCE") == 0)
-        cout << "acceptance" << endl;
-    else
-        cout << "not acceptance" << endl;
-
-    cout << setw(3) << "Num";
-    cout << setw(5) << "left";
-    cout << setw(5) << "no.";
-    cout << setw(5) << "bottom";
-    cout << setw(5) << "no.";
-    cout << setw(12) << "result";
-    cout << setw(12) << "left";
-    cout << setw(12) << "bottom" << endl;;
-
-
-    for(int i=0;i<generationIntList.size();i++){
-        cout << setw(3) << i+1;
-        for(int a:generationIntList[i]){
-            cout << setw(5) << a;
-        }
-        for(string a:generationStringList[i]){
-            cout << setw(12) << a;
-        }
-        cout << "" << endl;
-    }
-
     setCKYList(P);
+    setGenerationIntList(generationIntList);
+    setGenerationStringList(generationStringList);
     
+}
+
+//S文の作成
+//(generationIntList,generationStringList,itr)
+//itr:表示するリストの番号
+string Parser::makeSSentence(vector<vector<int>> generationIntList,vector<vector<string>> generationStringList,int itr){
+    //入力文以下のサイズになったら品詞を返す
+    if(itr <= getWordList().size()){
+        return "(" + generationStringList[itr-1][0] + " \"" + getWordList()[itr-1] + "\")";
+    }else if(itr < 0){
+        cout << "error" << endl;
+    }
+
+    string A = generationStringList[itr-1][0];
+    string B="",C="";
+
+    B = makeSSentence(generationIntList,generationStringList,generationIntList[itr-1][0]);
+    C = makeSSentence(generationIntList,generationStringList,generationIntList[itr-1][2]);
+
+    return "(" + A + B + C + ")";
 }
 
 
@@ -336,4 +330,22 @@ vector<vector<vector<string>>> Parser::getCKYList(){
 //CKYListのセッター
 void Parser::setCKYList(vector<vector<vector<string>>> CKYList){
     this->CKYList = CKYList;
+}
+
+//generationStringListのゲッター
+vector<vector<string>> Parser::getGenerationStringList(){
+    return this->generationStringList;
+}
+//generationStringListのセッター
+void Parser::setGenerationStringList(vector<vector<string>> generationStringList){
+    this->generationStringList = generationStringList;
+}
+
+//generationIntListのゲッター
+vector<vector<int>> Parser::getGenerationIntList(){
+    return this->generationIntList;
+}
+//generationIntListのセッター
+void Parser::setGenerationIntList(vector<vector<int>> generationIntList){
+    this->generationIntList = generationIntList;
 }
