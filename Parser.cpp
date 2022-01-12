@@ -123,7 +123,7 @@ void Parser::printWords(){
         cout << "not acceptance" << endl;
 
     //リストを表示
-
+    /*
     cout << setw(3) << "Num";
     cout << setw(5) << "left";
     cout << setw(5) << "no.";
@@ -142,7 +142,7 @@ void Parser::printWords(){
         }
         cout << "" << endl;
     }
-
+    */
     //S文を表示
     string S = makeSSentence(generationIntList,generationStringList,generationIntList.size());
     cout << S << endl;
