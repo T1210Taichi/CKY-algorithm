@@ -1,6 +1,8 @@
-I NOUN
-saw VERB
-a DET
-girl NOUN
-with PREP
-telescope NOUN
+the DET
+child NOUN
+runs VERB
+quickly ADV
+to PREP
+the DET
+large ADJ
+house NOUN
