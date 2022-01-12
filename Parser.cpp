@@ -7,8 +7,8 @@ using namespace std;
 //コンストラクタ
 Parser::Parser(string sentenceFileName,string wordDictionaryFileName,string grammerDictionaryFileName){
     setWordList(toWords(sentenceFileName));
-    this-> wordDictionaryFileName = wordDictionaryFileName;
-    this-> grammerDictionaryFileName = grammerDictionaryFileName;
+    setWordDictionaryFileName(wordDictionaryFileName);
+    setGrammerDictionaryFileName(grammerDictionaryFileName);
 }
 
 //受理可能か不可能か調べる
@@ -56,7 +56,7 @@ bool Parser::readWordDictionary(){
     //文章に含まれる単語分繰り返す
     for(int i=0;i < list2.size();i++){
         //単語に対応する品詞を入れる
-        string s = Dictionary::wordDictionary(list2[i]);
+        string s = Dictionary::wordDictionary(list2[i],getWordDictionaryFileName());
         if(s.empty()){//単語に対応する品詞がなければ
             cout << "文字「" + list2[i] + "」が受理不可能" << endl;
             return false;
@@ -74,7 +74,7 @@ bool Parser::readWordDictionary(){
 
 //文法辞書を読み込む
 bool Parser::readGrammerDictionary(){
-    setGrammerDictionaryList(Dictionary::grammerDictionary());
+    setGrammerDictionaryList(Dictionary::grammerDictionary(getGrammerDictionaryFileName()));
     return true;
 }
 
@@ -348,4 +348,22 @@ vector<vector<int>> Parser::getGenerationIntList(){
 //generationIntListのセッター
 void Parser::setGenerationIntList(vector<vector<int>> generationIntList){
     this->generationIntList = generationIntList;
+}
+
+//wordDictionaryFileNameのゲッター
+string Parser::getWordDictionaryFileName(){
+    return this->wordDictionaryFileName;
+}
+//wordDictionaryFileNameのセッター
+void Parser::setWordDictionaryFileName(string file){
+    this->wordDictionaryFileName = file;
+}
+
+//grammerDictionaryFileNameのゲッター
+string Parser::getGrammerDictionaryFileName(){
+    return this->grammerDictionaryFileName;
+}
+//grammerDictionaryFileNameのセッター
+void Parser::setGrammerDictionaryFileName(string file){
+    this->grammerDictionaryFileName = file;
 }

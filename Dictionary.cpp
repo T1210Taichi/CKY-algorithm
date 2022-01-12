@@ -19,9 +19,9 @@ vector<string> Dictionary::split(string str, string separator){
 }
 
 //単語辞書
-string Dictionary::wordDictionary(string word){
+string Dictionary::wordDictionary(string word,string fileName){
     //ファイル
-    ifstream file("wordDictionary.txt");
+    ifstream file(fileName);
 
     string line="";
     vector<string> wv;
@@ -44,11 +44,11 @@ string Dictionary::wordDictionary(string word){
 }
 
 //文法辞書
-vector<vector<string>> Dictionary::grammerDictionary(){
+vector<vector<string>> Dictionary::grammerDictionary(string fileName){
 
     vector<vector<string>> list;
 
-    ifstream file("grammerDictionary.txt");
+    ifstream file(fileName);
     string line="";
     //1行ずつ読み込む
     while(getline(file,line)){

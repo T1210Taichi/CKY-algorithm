@@ -11,9 +11,9 @@ class Dictionary{
         //strをseparatorで区切る
         static vector<string> split(string str, string separator);
         //入力単語に対する品詞を返す
-        static string wordDictionary(string word);
+        static string wordDictionary(string word,string fileName);
         //生成規則を返す
-        static vector<vector<string>> grammerDictionary();
+        static vector<vector<string>> grammerDictionary(string fileName);
 };
 
 #endif

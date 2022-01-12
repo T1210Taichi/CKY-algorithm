@@ -74,6 +74,16 @@ class Parser{
         //generationIntListのセッター
         void setGenerationIntList(vector<vector<int>> generationIntList);
 
+        //wordDictionaryFileNameのゲッター
+        string getWordDictionaryFileName();
+        //wordDictionaryFileNameのセッター
+        void setWordDictionaryFileName(string file);
+
+        //grammerDictionaryFileNameのゲッター
+        string getGrammerDictionaryFileName();
+        //grammerDictionaryFileNameのセッター
+        void setGrammerDictionaryFileName(string file);
+
 };
 
 #endif

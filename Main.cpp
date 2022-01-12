@@ -6,10 +6,16 @@ using namespace std;
 
 int main(){
 
-    cout << "ファイル名を入力"<< endl;
-    string fileName = "sentence.txt";
-    //cin >> fileName;
-    Parser p = Parser(fileName);
+    cout << "文章ファイル名を入力"<< endl;
+    string sentenceFileName = "sentence.txt";
+    //cin >> sentenceFileName;
+    cout << "単語辞書ファイル名を入力"<< endl;
+    string wordDictionaryFileName = "wordDictionary.txt";
+    //cin >> wordDictionaryFileName;
+    cout << "文法規則ファイル名を入力"<< endl;
+    string grammerDictionaryFileName = "grammerDictionary.txt";
+    //cin >> grammerDictionaryFileName;
+    Parser p = Parser(sentenceFileName,wordDictionaryFileName,grammerDictionaryFileName);
     p.parser();
 
     return 0;
