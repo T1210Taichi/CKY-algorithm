@@ -1,7 +1,11 @@
 #pragma once
 
+#include "Dictionary.h"
+#include "Node.h"
+
 #include <bits/stdc++.h>
 using namespace std;
+using np = Node *;//Nodeのポインタ型
 
 #ifndef __PARSER_H_INCLUDED__
 #define __PARSER_H_INCLUDED__
@@ -19,16 +23,14 @@ class Parser{
         //生成規則を保存
         vector<vector<string>> grammerDictionaryList;
         //三角行列を保存
-        vector<vector<vector<string>>> CKYList;
-        //何番生成規則から生成されたか数字を保存
-        vector<vector<int>> generationIntList;
-        //生成規則の文字列を保存
-        vector<vector<string>> generationStringList;
+        vector<vector<vector<np>>> CKYList;
 
     //メソッド
     public:
         //コンストラクタ
         Parser(string sentenceFileName,string wordDictionaryFileName,string grammerDictionaryFileName);
+        //デストラクタ
+        ~Parser();
         //受理可能か不可能か調べる
         void parser();
         //ファイルから文章を単語ごとにリストに保存して返す
@@ -42,7 +44,7 @@ class Parser{
         //CKYアルゴリズム
         void CKY();
         //S文を作成
-        string makeSSentence(vector<vector<int>> generationIntList,vector<vector<string>> generationStringList,int itr);
+        string makeSSentence(vector<vector<vector<np>>> P,np n);
 
         //wordListのゲッター
         vector<string> getWordList();
@@ -60,19 +62,9 @@ class Parser{
         void setGrammerDictionaryList(vector<vector<string>> grammerDictionaryList);
 
         //CKYListのゲッター
-        vector<vector<vector<string>>> getCKYList();
+        vector<vector<vector<np>>> getCKYList();
         //CKYListのセッター
-        void setCKYList(vector<vector<vector<string>>> CKYList);
-
-        //generationStringListのゲッター
-        vector<vector<string>> getGenerationStringList();
-        //generationStringListのセッター
-        void setGenerationStringList(vector<vector<string>> generationStringList);
-
-        //generationIntListのゲッター
-        vector<vector<int>> getGenerationIntList();
-        //generationIntListのセッター
-        void setGenerationIntList(vector<vector<int>> generationIntList);
+        void setCKYList(vector<vector<vector<np>>> CKYList);
 
         //wordDictionaryFileNameのゲッター
         string getWordDictionaryFileName();

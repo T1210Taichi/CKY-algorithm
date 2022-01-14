@@ -30,8 +30,8 @@ class Node{
         //ゲッター
         int getValueInt();
         string getValueString();
-        Node getLeft();
-        Node getRight();
+        Node* getLeft();
+        Node* getRight();
 };
 
 #endif

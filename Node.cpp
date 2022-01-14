@@ -39,9 +39,9 @@ int Node::getValueInt(){
 string Node::getValueString(){
     return this->valueString;
 }
-Node Node::getLeft(){
-    return *(this->left);
+Node* Node::getLeft(){
+    return (this->left);
 }
-Node Node::getRight(){
-    return *(this->right);
+Node* Node::getRight(){
+    return (this->right);
 }

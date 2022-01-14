@@ -1,5 +1,7 @@
 #include "Dictionary.h"
 #include "Parser.h"
+#include "Node.h"
+
 
 #include <bits/stdc++.h>
 using namespace std;

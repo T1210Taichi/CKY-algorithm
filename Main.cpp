@@ -3,6 +3,7 @@ using namespace std;
 
 #include "Parser.h"
 #include "Dictionary.h"
+#include "Node.h"
 
 int main(){
 
