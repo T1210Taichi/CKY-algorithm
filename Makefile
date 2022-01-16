@@ -9,7 +9,7 @@ CFLAGS	=  -fexceptions -g
 
 # ----------------------------------------------------------------
 # sources and objects
-C_SRC	= Main.cpp Parser.cpp Dictionary.cpp
+C_SRC	= Main.cpp Node.cpp Parser.cpp Dictionary.cpp
 #C_OBJ	= $(C_SRC:.c=)
 C_OBJ	= Main
 
